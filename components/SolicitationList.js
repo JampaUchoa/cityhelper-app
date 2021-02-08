@@ -4,7 +4,7 @@ import { Button, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-
 import { get } from '../utils/fetch';
 import timeSince from '../utils/timesince';
 
-export default function SolicitationList() {
+export default function SolicitationList({navigation}) {
 
   const [solicitations, setSolicitations] = useState([]);
   const [ordering, setOrdering] = useState("-solicitacao_data");
@@ -30,11 +30,11 @@ export default function SolicitationList() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
       <ScrollView>
         {/* <Text style={styles.title}>Minhas Solicitações</Text> */}
         <Button
-          onPress={() => {}}
+          onPress={() => {navigation.navigate("Nova Solicitação")}}
           title="Nova Solicitação"
           color="#FFF"
           backgroundColor= "#fff"
