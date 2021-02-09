@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { Button, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { get, post } from '../utils/fetch';
 import timeSince from '../utils/timesince';
@@ -77,7 +77,7 @@ export default function SolicitationNew({navigation}) {
                     <View style={styles.button}>
                     <Button
                         onPress={() => {sendForm()}}
-                        title="Solicitar"
+                        title="Abrir chamado"
                         color="purple"
                         backgroundColor= "#fff"
                         accessibilityLabel="Realizar nova solicitação"
