@@ -45,7 +45,7 @@ export const post = async (endpoint, postData, method = "POST") => {
     }
   
     return new Promise((resolve, reject) => {
-      fetch(endpoint, {
+      fetch("http://localhost:8000" + endpoint, {
         method: method,
         headers: headers,
         body: data

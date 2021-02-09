@@ -33,13 +33,15 @@ export default function SolicitationList({navigation}) {
       <StatusBar style="light" />
       <ScrollView>
         {/* <Text style={styles.title}>Minhas Solicitações</Text> */}
-        <Button
-          onPress={() => {navigation.navigate("Nova Solicitação")}}
-          title="Nova Solicitação"
-          color="#FFF"
-          backgroundColor= "#fff"
-          accessibilityLabel="Realizar nova solicitação"
-        />
+        <View style={styles.button}>
+          <Button
+            onPress={() => {navigation.navigate("Nova Solicitação")}}
+            title="+ Nova Solicitação"
+            color="purple"
+            backgroundColor= "#fff"
+            accessibilityLabel="Realizar nova solicitação"
+          />
+        </View>
 
         {solicitations.map(solicitation => <Card key={solicitation.id} solicitation={solicitation} />)}
       </ScrollView>
@@ -88,12 +90,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginVertical: 10,
     marginHorizontal: 20,
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 20
   },
   header: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between"
-  }
+  },
+  button: {
+    marginVertical: 10,
+    backgroundColor: "rgba(255,255,255,1)",
+    padding: 10,
+    borderRadius: 10,
+    color: "purple",
+    fontWeight: "bold"
+},
 });
