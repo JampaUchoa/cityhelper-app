@@ -1,9 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
-import { Button, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import { get, post } from '../utils/fetch';
-import timeSince from '../utils/timesince';
+import { post } from '../utils/fetch';
 
 export default function SolicitationNew({navigation}) {
 
@@ -84,14 +82,8 @@ export default function SolicitationNew({navigation}) {
                         disabled={Object.values(form).indexOf("") !== -1}
                     />
                     </View>
-
-
                 </View>
-
-
             </ScrollView>
-
-
         </View>
     );
 }
