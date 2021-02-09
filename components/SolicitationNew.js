@@ -2,8 +2,21 @@ import React, { useState } from 'react';
 import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { post } from '../utils/fetch';
+import soap from "soap-everywhere";
+import * as Location from 'expo-location';
 
 export default function SolicitationNew({navigation}) {
+
+  async function getLocation() {
+    let { status } = await Location.requestPermissionsAsync();
+    if (status !== 'granted') {
+    setErrorMsg('Permission to access location was denied');
+    return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    decodeCoords(location);
+  }
 
     const [form, setForm] = useState({
         solicitacao_descricao: "",
@@ -21,6 +34,19 @@ export default function SolicitationNew({navigation}) {
     const sendForm = async () => {
         post("/api/solicitation/", form).then(res => alert(res))
         //navigation.navigate("Home")
+    }
+
+    function decodeCoords({coords}) {
+        const url = 'http://localhost:7000/geocoder?wsdl';
+        const args = { latitude: coords.latitude, longitude: coords.longitude };
+        soap.createClient(url, function(err, client) {
+        if (err) console.error(err);
+        else {
+            client.reverseGeocode(args, function(err, response) {
+                changeForm("solicitacao_endereco", response.endereco)
+            });
+        }
+        });
     }
 
     return (
@@ -57,7 +83,11 @@ export default function SolicitationNew({navigation}) {
                             value={form.solicitacao_endereco}
                         />
                         </View>
-
+                        <Button
+                            onPress={() => getLocation()}
+                            title="Meu Local"
+                            color="#ddf"
+                        ></Button>
                     </View>
 
                     <View style={styles.formSection}>
