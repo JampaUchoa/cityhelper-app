@@ -67,12 +67,21 @@ function Card({ solicitation }) {
 
       <View style={styles.card}>
         <View style={styles.header}>
-          <Text> {solicitation.processo_numero} </Text>
-          <Text> {solicitation.processo_status} </Text>
+          <View>
+            <Text> Processo #{solicitation.processo_numero} </Text>
+            <Text style={{color: "#333"}}> há {timeSince(solicitation.solicitacao_data)} </Text>
+          </View>
+          <View>
+            <Text style={styles.badge}> {solicitation.processo_status} </Text>
+          </View>
         </View>
-        <Text> há {timeSince(solicitation.solicitacao_data)} </Text>
-        <Text numberOfLines={3}> {solicitation.solicitacao_descricao} </Text>
-        <Text numberOfLines={1}> {solicitation.solicitacao_endereco} </Text>
+        <Text numberOfLines={3} style={{marginVertical: 10, marginHorizontal: 3}}>{solicitation.solicitacao_descricao} </Text>
+
+        <View>
+          <Text style={{fontSize: 12}}> {solicitation.solicitacao_endereco} </Text>
+          <Text style={{fontSize: 12}}> {solicitation.solicitacao_localidade} </Text>
+          <Text style={{fontSize: 12}}> {solicitation.solicitacao_roteiro} </Text>
+        </View>
 
       </View>
     </SafeAreaView>
@@ -115,5 +124,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     color: "#1874f5",
     fontWeight: "bold"
-},
+  },
+  badge:{
+    textTransform: "capitalize",
+    padding: 3,
+    borderRadius: 5,
+    backgroundColor: "#e3aa00",
+    color: "#fff"
+  }
 });
