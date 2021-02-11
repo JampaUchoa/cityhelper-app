@@ -3,41 +3,50 @@ import React, { useEffect, useState } from 'react';
 import { Button, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { get } from '../utils/fetch';
 import timeSince from '../utils/timesince';
+import { v4 as uuidv4 } from 'uuid';
+import 'react-native-get-random-values';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SolicitationList({navigation}) {
 
   const [solicitations, setSolicitations] = useState([]);
-  const [ordering, setOrdering] = useState("-solicitacao_data");
   const [offset, setOffset] = useState(0);
   const [count, setCount] = useState(0);
   const [search, setSearch] = useState("");
-  const [searchTarget, setSearchTargets] = useState({});
 
   useEffect(() => {
-    get(`/api/solicitation/?ordering=${ordering}&offset=${offset}&search=${search}&${jsonToQueryString(searchTarget)}`).then(res => {
-      setSolicitations(res.results);
-      setCount(res.count);
-    });
-  }, [ordering, offset, search, searchTarget])
+    let myUUID;
+    async function fetchData() {
+      try {
+        myUUID = await AsyncStorage.getItem('@uuid')
+        if (!myUUID){
+          myUUID = uuidv4()
+          AsyncStorage.setItem('@uuid', uuidv4())
+      }
 
-  const jsonToQueryString = (json) => {
-    return Object.keys(json).map(function (key) {
-      return encodeURIComponent(key) + '=' +
-        encodeURIComponent(json[key]);
-    }).join('&');
-  }
+    } catch(e) {
+      console.log(e)
+      myUUID = uuidv4();
+    }
+  
+    const res = await get(`/api/solicitation/?ordering=-solicitacao_data&offset=${offset}&search=${search}&sent_by=${myUUID}`)
+    setSolicitations(res.results);
+    setCount(res.count);
+      
+    }
 
+    fetchData();
+  }, [offset, search])
 
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
       <ScrollView>
-        {/* <Text style={styles.title}>Minhas Solicitações</Text> */}
         <View style={styles.button}>
           <Button
             onPress={() => {navigation.navigate("Nova Solicitação")}}
             title="+ Nova Solicitação"
-            color="purple"
+            color="#1874f5"
             backgroundColor= "#fff"
             accessibilityLabel="Realizar nova solicitação"
           />
@@ -74,11 +83,11 @@ function Card({ solicitation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'purple',
+    backgroundColor: '#1874f5',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
-    paddingTop: 0
+    paddingTop: 0,
   },
   title: {
     color: "#fff",
@@ -89,7 +98,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     marginVertical: 10,
-    marginHorizontal: 20,
+    marginHorizontal: 10,
     borderRadius: 10,
     padding: 20
   },
@@ -100,10 +109,11 @@ const styles = StyleSheet.create({
   },
   button: {
     marginVertical: 10,
+    marginHorizontal: 10,
     backgroundColor: "rgba(255,255,255,1)",
     padding: 10,
     borderRadius: 10,
-    color: "purple",
+    color: "#1874f5",
     fontWeight: "bold"
 },
 });

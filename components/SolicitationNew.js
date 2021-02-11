@@ -106,7 +106,7 @@ export default function SolicitationNew({navigation}) {
                     <Button
                         onPress={() => {sendForm()}}
                         title="Abrir chamado"
-                        color="purple"
+                        color="#1874f5"
                         backgroundColor= "#fff"
                         accessibilityLabel="Realizar nova solicitação"
                         disabled={Object.values(form).indexOf("") !== -1}
@@ -122,7 +122,7 @@ export default function SolicitationNew({navigation}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'purple',
+        backgroundColor: '#1874f5',
         alignItems: 'center',
         justifyContent: 'center',
         paddingTop: 0
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(255,255,255,1)",
         padding: 10,
         borderRadius: 10,
-        color: "purple"
+        color: "#1874f5"
     },
     textDesc:{
         fontSize: 18,

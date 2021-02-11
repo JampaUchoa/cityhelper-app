@@ -2,7 +2,6 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import SolicitationList from './components/SolicitationList';
-import { Button } from 'react-native';
 import SolicitationNew from './components/SolicitationNew';
 
 const Stack = createStackNavigator();
@@ -14,7 +13,7 @@ function App() {
       initialRouteName="Minhas Solicitações"
       screenOptions={{
         headerStyle: {
-          backgroundColor: 'purple',
+          backgroundColor: '#1874f5',
           elevation: 0,
           borderBottomWidth: 0,
           shadowColor: '#aaa',
@@ -27,7 +26,6 @@ function App() {
 
       >
         <Stack.Screen name="Minhas Solicitações" component={SolicitationList} />
-
         <Stack.Screen name="Nova Solicitação" component={SolicitationNew}/>
 
       </Stack.Navigator>

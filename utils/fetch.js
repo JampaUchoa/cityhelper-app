@@ -1,5 +1,3 @@
-import { getUserLogin } from "./user";
-
 export const get = async (endpoint, type = "json") => {
 
     const headers = {}
