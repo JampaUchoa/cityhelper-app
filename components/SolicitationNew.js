@@ -1,57 +1,105 @@
 import React, { useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button, ScrollView, StyleSheet, Text, View, KeyboardAvoidingView } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { post } from '../utils/fetch';
 import soap from "soap-everywhere";
 import * as Location from 'expo-location';
+import MapView, { Marker } from 'react-native-maps';
 
-export default function SolicitationNew({navigation}) {
-
-  async function getLocation() {
-    let { status } = await Location.requestPermissionsAsync();
-    if (status !== 'granted') {
-    setErrorMsg('Permission to access location was denied');
-    return;
-    }
-
-    let location = await Location.getCurrentPositionAsync({});
-    decodeCoords(location);
-  }
+export default function SolicitationNew({ navigation }) {
 
     const [form, setForm] = useState({
         solicitacao_descricao: "",
         solicitacao_endereco: "",
-        solicitacao_roteiro: ""
+        solicitacao_roteiro: "",
+        latitude: "",
+        longitude: ""
+    })
+    const [region, setRegion] = useState({
+        latitude: -8.0695356,
+        longitude: -34.9155052,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
     })
 
     const [errors, setErrors] = useState([])
 
-    const changeForm = (key,val) => {
+    async function getLocation() {
+        let { status } = await Location.requestPermissionsAsync();
+        if (status !== 'granted') {
+            setErrorMsg('Permission to access location was denied');
+            return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+
+        decodeCoords(location);
+    }
+
+
+    const changeForm = (key, val) => {
         const updatedForm = { ...form, [key]: val };
         setForm(updatedForm);
     }
 
     const sendForm = async () => {
-        post("/api/solicitation/", form).then(res => alert(res))
+        post("/api/solicitation/", form).then(res => alert(res)).catch(e => alert(JSON.stringify(e)))
         //navigation.navigate("Home")
     }
 
-    function decodeCoords({coords}) {
+    function decodeCoords({ coords }) {
         const url = 'http://localhost:7000/geocoder?wsdl';
         const args = { latitude: coords.latitude, longitude: coords.longitude };
-        soap.createClient(url, function(err, client) {
-        if (err) console.error(err);
-        else {
-            client.reverseGeocode(args, function(err, response) {
-                changeForm("solicitacao_endereco", response.endereco)
-            });
-        }
+        soap.createClient(url, function (err, client) {
+            if (err) console.error(err);
+            else {
+                client.reverseGeocode(args, function (err, response) {
+                    setForm({ ...form, 
+                        latitude: coords.latitude, 
+                        longitude: coords.longitude,
+                        solicitacao_endereco: response.endereco
+                    })
+
+                    setRegion({
+                        latitude: coords.latitude, 
+                        longitude: coords.longitude,
+                        latitudeDelta: 0.002,
+                        longitudeDelta: 0.001,
+                
+                    })
+
+                });
+            }
+        });
+    }
+
+    function searchAddress(address) {
+        if (form.latitude !== "") return;
+        const url = 'http://localhost:7000/geocoder?wsdl';
+        const args = { endereco: address };
+        soap.createClient(url, function (err, client) {
+            if (err) console.error(err);
+            else {
+                client.performGeocode(args, function (err, response) {
+                    changeForm("latitude", response.latitude)
+                    changeForm("longitude", response.longitude)
+                    setRegion({
+                        latitude: response.latitude, 
+                        longitude: response.longitude,
+                        latitudeDelta: 0.002,
+                        longitudeDelta: 0.001,
+                    })
+                });
+            }
         });
     }
 
     return (
         <View style={styles.container}>
-            <ScrollView style={{flex: 1, flexGrow: 1, width: "100%"}}>
+            <ScrollView style={{ flex: 1, flexGrow: 1, width: "100%" }}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}>
+
                 <View style={styles.card}>
                     {/* <Text style={styles.title}>
                         Nova solicitação
@@ -62,13 +110,13 @@ export default function SolicitationNew({navigation}) {
                             Descrição
                         </Text>
                         <View style={styles.textInput}>
-                        <TextInput
-                            multiline={true}
-                            style={{height: 100}}
-                            numberOfLines={4}
-                            onChangeText={text => changeForm("solicitacao_descricao", text)}
-                            value={form.solicitacao_descricao}
-                        />
+                            <TextInput
+                                multiline={true}
+                                style={{ height: 100 }}
+                                numberOfLines={4}
+                                onChangeText={text => changeForm("solicitacao_descricao", text)}
+                                value={form.solicitacao_descricao}
+                            />
                         </View>
 
                     </View>
@@ -78,16 +126,40 @@ export default function SolicitationNew({navigation}) {
                             Endereço
                         </Text>
                         <View style={styles.textInput}>
-                        <TextInput
-                            onChangeText={text => changeForm("solicitacao_endereco", text)}
-                            value={form.solicitacao_endereco}
-                        />
+                            <TextInput
+                                onChangeText={text => changeForm("solicitacao_endereco", text)}
+                                value={form.solicitacao_endereco}
+                                placeholder={"Digite ou selecione no mapa..."}
+                                onBlur={() => searchAddress(form.solicitacao_endereco)}
+                            />
                         </View>
                         <Button
                             onPress={() => getLocation()}
                             title="Meu Local"
                             color="#ddf"
                         ></Button>
+
+                        <MapView
+                            style={styles.map}
+                            region={region}
+                        >
+
+                            {form.latitude !== "" ?
+                                <Marker
+                                    draggable
+                                    coordinate={{
+                                        latitude: form.latitude,
+                                        longitude: form.longitude
+                                    }}
+                                    onDragEnd={(e) => {
+                                        decodeCoords({coords: e.nativeEvent.coordinate})
+                                    }}
+                                />
+                                :
+                                null
+                            }
+                        </MapView>
+                        <Text> {JSON.stringify(form)} </Text>
                     </View>
 
                     <View style={styles.formSection}>
@@ -95,24 +167,26 @@ export default function SolicitationNew({navigation}) {
                             Referencia
                         </Text>
                         <View style={styles.textInput}>
-                        <TextInput
-                            onChangeText={text => changeForm("solicitacao_roteiro", text)}
-                            value={form.solicitacao_roteiro}
-                        />
+                            <TextInput
+                                onChangeText={text => changeForm("solicitacao_roteiro", text)}
+                                value={form.solicitacao_roteiro}
+                            />
                         </View>
 
                     </View>
                     <View style={styles.button}>
-                    <Button
-                        onPress={() => {sendForm()}}
-                        title="Abrir chamado"
-                        color="#1874f5"
-                        backgroundColor= "#fff"
-                        accessibilityLabel="Realizar nova solicitação"
-                        disabled={Object.values(form).indexOf("") !== -1}
-                    />
+                        <Button
+                            onPress={() => { sendForm() }}
+                            title="Abrir chamado"
+                            color="#1874f5"
+                            backgroundColor="#fff"
+                            accessibilityLabel="Realizar nova solicitação"
+                            disabled={Object.values(form).indexOf("") !== -1}
+                        />
                     </View>
                 </View>
+            </KeyboardAvoidingView>
+
             </ScrollView>
         </View>
     );
@@ -162,10 +236,14 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         color: "#1874f5"
     },
-    textDesc:{
+    textDesc: {
         fontSize: 18,
         marginBottom: 5,
         color: "#fff"
+    },
+    map: {
+        width: "100%",
+        height: 150
     }
 
 });
