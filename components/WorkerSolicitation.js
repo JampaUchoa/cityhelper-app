@@ -14,7 +14,11 @@ export default function WorkerSolicitation({ navigation }) {
 
     function createSolicitation() {
         post(`http://localhost:7500/solicitar-servico/?latitude=${location.latitude}&longitude=${location.longitude}`).then(res => {
-            setSolicitation(res)
+            if (res.message == "NO_SOLICITATION"){
+                alert("Não há chamados mais abertos! Bom trabalho!")
+            } else {
+                setSolicitation(res)
+            }
         }).catch(e => console.log(e))
     }
 

@@ -66,8 +66,8 @@ export default function SolicitationNew({ navigation }) {
     }
 
     const sendForm = async () => {
-        post("/api/solicitation/", form).then(res => alert(res)).catch(e => alert(JSON.stringify(e)))
-        //navigation.navigate("Home")
+        post("/api/solicitation/", form).then(res => navigation.navigate("Minhas Solicitações")).catch(e => alert(JSON.stringify(e)))
+        
     }
 
     function decodeCoords({ coords }) {

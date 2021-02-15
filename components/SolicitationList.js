@@ -6,6 +6,7 @@ import timeSince from '../utils/timesince';
 import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function SolicitationList({ navigation }) {
 
@@ -14,23 +15,30 @@ export default function SolicitationList({ navigation }) {
   const [count, setCount] = useState(0);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
+  // useEffect(() => {
+
+  //   fetchData();
+  // }, [offset, search])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [])
+  )
+
+  async function fetchData() {
     let myUUID;
-    async function fetchData() {
-      myUUID = await AsyncStorage.getItem('@uuid')
-      if (!myUUID) {
-        myUUID = uuidv4()
-        AsyncStorage.setItem('@uuid', uuidv4())
-      }
-
-      const res = await get(`/api/solicitation/?ordering=-solicitacao_data&offset=${offset}&search=${search}&enviado_por=${myUUID}`)
-      setSolicitations(res.results);
-      setCount(res.count);
-
+    myUUID = await AsyncStorage.getItem('@uuid')
+    if (!myUUID) {
+      myUUID = uuidv4()
+      AsyncStorage.setItem('@uuid', uuidv4())
     }
 
-    fetchData();
-  }, [offset, search])
+    const res = await get(`/api/solicitation/?ordering=-solicitacao_data&offset=${offset}&search=${search}&enviado_por=${myUUID}`)
+    setSolicitations(res.results);
+    setCount(res.count);
+
+  }
 
   return (
     <View style={styles.container}>
@@ -130,7 +138,7 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
     padding: 3,
     borderRadius: 5,
-    backgroundColor: "#e3aa00",
+    backgroundColor: "#333",
     color: "#fff"
   }
 });
