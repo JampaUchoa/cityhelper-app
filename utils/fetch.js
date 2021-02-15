@@ -43,7 +43,12 @@ export const post = async (endpoint, postData, method = "POST") => {
     }
   
     return new Promise((resolve, reject) => {
-      fetch("http://localhost:8000" + endpoint, {
+      let url = "http://localhost:8000" + endpoint
+      if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+        url = endpoint;
+      }
+      console.log(url)
+      fetch(url, {
         method: method,
         headers: headers,
         body: data

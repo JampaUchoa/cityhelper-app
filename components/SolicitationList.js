@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function SolicitationList({navigation}) {
+export default function SolicitationList({ navigation }) {
 
   const [solicitations, setSolicitations] = useState([]);
   const [offset, setOffset] = useState(0);
@@ -17,22 +17,16 @@ export default function SolicitationList({navigation}) {
   useEffect(() => {
     let myUUID;
     async function fetchData() {
-      try {
-        myUUID = await AsyncStorage.getItem('@uuid')
-        if (!myUUID){
-          myUUID = uuidv4()
-          AsyncStorage.setItem('@uuid', uuidv4())
+      myUUID = await AsyncStorage.getItem('@uuid')
+      if (!myUUID) {
+        myUUID = uuidv4()
+        AsyncStorage.setItem('@uuid', uuidv4())
       }
 
-    } catch(e) {
-      console.log(e)
-      myUUID = uuidv4();
-    }
-  
-    const res = await get(`/api/solicitation/?ordering=-solicitacao_data&offset=${offset}&search=${search}&sent_by=${myUUID}`)
-    setSolicitations(res.results);
-    setCount(res.count);
-      
+      const res = await get(`/api/solicitation/?ordering=-solicitacao_data&offset=${offset}&search=${search}&enviado_por=${myUUID}`)
+      setSolicitations(res.results);
+      setCount(res.count);
+
     }
 
     fetchData();
@@ -44,12 +38,21 @@ export default function SolicitationList({navigation}) {
       <ScrollView>
         <View style={styles.button}>
           <Button
-            onPress={() => {navigation.navigate("Nova Solicitação")}}
+            onPress={() => { navigation.navigate("Nova Solicitação") }}
             title="+ Nova Solicitação"
             color="#1874f5"
-            backgroundColor= "#fff"
+            backgroundColor="#fff"
             accessibilityLabel="Realizar nova solicitação"
           />
+
+        </View>
+        <View style={styles.button}>
+          <Button
+            onPress={() => { navigation.navigate("Trabalhador") }}
+            title="Visão trabalhador"
+            color="red"
+          />
+
         </View>
 
         {solicitations.map(solicitation => <Card key={solicitation.id} solicitation={solicitation} />)}
@@ -60,31 +63,29 @@ export default function SolicitationList({navigation}) {
   );
 }
 
-function Card({ solicitation }) {
+export function Card({ solicitation }) {
 
   return (
-    <SafeAreaView>
 
-      <View style={styles.card}>
-        <View style={styles.header}>
-          <View>
-            <Text> Processo #{solicitation.processo_numero} </Text>
-            <Text style={{color: "#333"}}> há {timeSince(solicitation.solicitacao_data)} </Text>
-          </View>
-          <View>
-            <Text style={styles.badge}> {solicitation.processo_status} </Text>
-          </View>
-        </View>
-        <Text numberOfLines={3} style={{marginVertical: 10, marginHorizontal: 3}}>{solicitation.solicitacao_descricao} </Text>
-
+    <View style={styles.card}>
+      <View style={styles.header}>
         <View>
-          <Text style={{fontSize: 12}}> {solicitation.solicitacao_endereco} </Text>
-          <Text style={{fontSize: 12}}> {solicitation.solicitacao_localidade} </Text>
-          <Text style={{fontSize: 12}}> {solicitation.solicitacao_roteiro} </Text>
+          <Text> Processo #{solicitation.processo_numero} </Text>
+          <Text style={{ color: "#333" }}> há {timeSince(solicitation.solicitacao_data)} </Text>
         </View>
-
+        <View>
+          <Text style={styles.badge}> {solicitation.processo_situacao} </Text>
+        </View>
       </View>
-    </SafeAreaView>
+      <Text numberOfLines={3} style={{ marginVertical: 10, marginHorizontal: 3 }}>{solicitation.solicitacao_descricao} </Text>
+
+      <View>
+        <Text style={{ fontSize: 12 }}> {solicitation.solicitacao_endereco} </Text>
+        <Text style={{ fontSize: 12 }}> {solicitation.solicitacao_localidade} </Text>
+        <Text style={{ fontSize: 12 }}> {solicitation.solicitacao_roteiro} </Text>
+      </View>
+
+    </View>
 
   )
 }
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 10,
     borderRadius: 10,
-    padding: 20
+    padding: 20,
   },
   header: {
     flex: 1,
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
     color: "#1874f5",
     fontWeight: "bold"
   },
-  badge:{
+  badge: {
     textTransform: "capitalize",
     padding: 3,
     borderRadius: 5,

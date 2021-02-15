@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, ScrollView, StyleSheet, Text, View, KeyboardAvoidingView } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { post } from '../utils/fetch';
 import soap from "soap-everywhere";
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
+import { v4 as uuidv4 } from 'uuid';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SolicitationNew({ navigation }) {
 
@@ -13,7 +15,7 @@ export default function SolicitationNew({ navigation }) {
         solicitacao_endereco: "",
         solicitacao_roteiro: "",
         latitude: "",
-        longitude: ""
+        longitude: "",
     })
     const [region, setRegion] = useState({
         latitude: -8.0695356,
@@ -21,6 +23,26 @@ export default function SolicitationNew({ navigation }) {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
     })
+
+    useEffect(() => {
+        let myUUID;
+        async function fetchData() {
+        try{
+            myUUID = await AsyncStorage.getItem('@uuid')
+
+        } catch(e){
+            console.log(e)
+        }
+
+          if (!myUUID) {
+            myUUID = uuidv4()
+            AsyncStorage.setItem('@uuid', uuidv4())
+          }
+          changeForm("enviado_por", myUUID)
+        }
+    
+        fetchData();
+      }, [])
 
     const [errors, setErrors] = useState([])
 
@@ -35,6 +57,7 @@ export default function SolicitationNew({ navigation }) {
 
         decodeCoords(location);
     }
+
 
 
     const changeForm = (key, val) => {
@@ -159,7 +182,7 @@ export default function SolicitationNew({ navigation }) {
                                 null
                             }
                         </MapView>
-                        <Text> {JSON.stringify(form)} </Text>
+                        {/* <Text> {JSON.stringify(form)} </Text> */}
                     </View>
 
                     <View style={styles.formSection}>
