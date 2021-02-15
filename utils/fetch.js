@@ -3,7 +3,11 @@ export const get = async (endpoint, type = "json") => {
     const headers = {}
   
     return new Promise((resolve, reject) => {
-      fetch("http://localhost:8000" + endpoint, {
+      let url = "http://localhost:8000" + endpoint
+      if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+        url = endpoint;
+      }
+      fetch(url, {
         method: "GET",
         headers
       }).then(function (response) {

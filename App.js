@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import SolicitationList from './components/SolicitationList';
 import SolicitationNew from './components/SolicitationNew';
 import WorkerSolicitation from './components/WorkerSolicitation';
+import Monitor from './components/Monitor';
 
 const Stack = createStackNavigator();
 
@@ -11,7 +12,7 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator 
-      initialRouteName="Minhas Solicitações"
+      initialRouteName="Monitor"
       screenOptions={{
         headerStyle: {
           backgroundColor: '#1874f5',
@@ -26,6 +27,8 @@ function App() {
       }}
 
       >
+        <Stack.Screen name="Monitor" component={Monitor} />
+
         <Stack.Screen name="Minhas Solicitações" component={SolicitationList} />
         <Stack.Screen name="Nova Solicitação" component={SolicitationNew}/>
         <Stack.Screen name="Trabalhador" component={WorkerSolicitation}/>
