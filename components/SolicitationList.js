@@ -54,14 +54,7 @@ export default function SolicitationList({ navigation }) {
           />
 
         </View>
-        <View style={styles.button}>
-          <Button
-            onPress={() => { navigation.navigate("Trabalhador") }}
-            title="Visão trabalhador"
-            color="red"
-          />
 
-        </View>
 
         {solicitations.map(solicitation => <Card key={solicitation.id} solicitation={solicitation} />)}
       </ScrollView>

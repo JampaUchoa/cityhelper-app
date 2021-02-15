@@ -1,11 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
-import { Button, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { get } from '../utils/fetch';
-import searchAddress from './SolicitationNew';
-import { v4 as uuidv4 } from 'uuid';
 import 'react-native-get-random-values';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import soap from "soap-everywhere";
 
